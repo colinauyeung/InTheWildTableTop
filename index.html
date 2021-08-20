@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p id="hello"> HeLLo World</p>
+<video id="vid">
+    <source src="video/time-1.mp4" type="video/mp4" />
+</video>
+
+<script>
+    var vid = document.getElementById("vid");
+
+    function handtime(time){
+        console.log(time);
+    }
+
+    vid.addEventListener("timeupdate", (e) => {
+        handtime(vid.currentTime*1000);
+    });
+    window.addEventListener('DOMContentLoaded', () => {
+        vid.play();
+    });
+    // const electron = require('electron');
+    // // var remote = require('remote');
+    // const remote = require('electron').remote;
+    // const windowManager = remote.require('electron-window-manager');
+    // // var windowManager = require("electron-window-manager");
+    // const { v4: uuidv4 } = require('uuid');
+    // // const remote = require('remote');
+</script>
+</body>
+</html>
