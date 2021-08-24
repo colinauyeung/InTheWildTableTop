@@ -17,11 +17,21 @@
             height: 160%;
             margin-left: -570px;
             margin-top: -250px;
+            z-index: 0;
+        }
+
+        #mess {
+            color: white;
+            z-index: 3;
         }
     </style>
 </head>
 <body>
-<div id="videobox"></div>
+<div id="videobox">
+    <div id="mess">
+        HELLO WORLd
+    </div>
+</div>
 <script>
     const electron = require('electron');
     // var remote = require('remote');
@@ -40,9 +50,15 @@
         vid.loop = true;
         vid.controls = true;
         vid.className = "videof"
-        let box = document.getElementById("videobox")
+        let box = document.getElementById("videobox");
+        let mess = document.createElement("div");
+        mess.id = "mess";
+        mess.innerText = "Hello World";
         box.innerHTML = "";
         box.appendChild(vid);
+        box.appendChild(mess);
+
+
         video = vid;
     })
 
