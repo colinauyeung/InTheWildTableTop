@@ -3,26 +3,464 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+        #viewbox {
+            width: 850px;
+            height: 250px;
+            background-color: orange;
+            overflow: scroll;
+        }
+
+        .thumb {
+            width: 190px;
+            height: 200px;
+            padding: 5px;
+            float: left;
+            overflow: hidden;
+        }
+
+        .thumbimg{
+            max-width: 190px;
+            pointer-events: none;
+        }
+
+        .button{
+            float: left;
+        }
+
+    </style>
 </head>
 <body>
-<p id="hello"> HeLLo World</p>
-<video id="vid">
-    <source src="video/time-1.mp4" type="video/mp4" />
-</video>
+<button id="rewind" class="button" disabled><<</button>
+<button id="back" class="button" disabled><</button>
+<button id="play" class="button" disabled>Pause</button>
+<button id="forward" class="button" disabled>></button>
+<button id="fastforward" class="button" disabled>>></button>
+<div id="bounding">
+
+    <div id="box2">
+        <video id="video" autoplay style="display:none;"></video>
+        <canvas id="canvas" style="width:640px; height:480px;"></canvas>
+    </div>
+
+
+
+
+
+</div>
+<label for="selection">Choose a date to view:</label>
+
+<select name="cars" id="selection">
+<!--    <option value="volvo">Volvo</option>-->
+<!--    <option value="saab">Saab</option>-->
+<!--    <option value="mercedes">Mercedes</option>-->
+<!--    <option value="audi">Audi</option>-->
+</select>
+
+<button id="btn">View</button>
+
+<div id="viewbox">
+<!--    <div class="thumb">-->
+<!--        <img class="thumbimg" src="thumbnails/0c0b5cb1-12f2-4c43-9b1d-c492e4696bf9.jpg" alt="test">-->
+<!--        <div>December 17, 1995 03:24:00</div>-->
+<!--    </div>-->
+<!--    <div class="thumb">-->
+<!--        <img class="thumbimg" src="thumbnails/0c0b5cb1-12f2-4c43-9b1d-c492e4696bf9.jpg" alt="test">-->
+<!--        <div>December 17, 1995 03:24:00</div>-->
+<!--    </div>-->
+<!--    <div class="thumb">-->
+<!--        <img class="thumbimg" src="thumbnails/0c0b5cb1-12f2-4c43-9b1d-c492e4696bf9.jpg" alt="test">-->
+<!--        <div>December 17, 1995 03:24:00</div>-->
+<!--    </div>-->
+<!--    <div class="thumb">-->
+<!--        <img class="thumbimg" src="thumbnails/0c0b5cb1-12f2-4c43-9b1d-c492e4696bf9.jpg" alt="test">-->
+<!--        <div>December 17, 1995 03:24:00</div>-->
+<!--    </div>-->
+<!--    <div class="thumb">-->
+<!--        <img class="thumbimg" src="thumbnails/0c0b5cb1-12f2-4c43-9b1d-c492e4696bf9.jpg" alt="test">-->
+<!--        <div>December 17, 1995 03:24:00</div>-->
+<!--    </div>-->
+<!--    <div class="thumb">-->
+<!--        <img class="thumbimg" src="thumbnails/0c0b5cb1-12f2-4c43-9b1d-c492e4696bf9.jpg" alt="test">-->
+<!--        <div>December 17, 1995 03:24:00</div>-->
+<!--    </div>-->
+<!--    <div class="thumb">-->
+<!--        <img class="thumbimg" src="thumbnails/0c0b5cb1-12f2-4c43-9b1d-c492e4696bf9.jpg" alt="test">-->
+<!--        <div>December 17, 1995 03:24:00</div>-->
+<!--    </div>-->
+<!--    <div class="thumb">-->
+<!--        <img class="thumbimg" src="thumbnails/0c0b5cb1-12f2-4c43-9b1d-c492e4696bf9.jpg" alt="test">-->
+<!--        <div>December 17, 1995 03:24:00</div>-->
+<!--    </div>-->
+
+</div>
+
 
 <script>
-    var vid = document.getElementById("vid");
+    var electron = require('electron');
+    const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+    const ffmpeg = require('fluent-ffmpeg');
+    ffmpeg.setFfmpegPath(ffmpegPath);
+    var FileSaver = require('file-saver');
+    const remote = require('electron').remote;
+    const windowManager = remote.require('electron-window-manager');
+    var fs = require('fs');
+    const { v4: uuidv4 } = require('uuid');
 
-    function handtime(time){
-        console.log(time);
+    var videodir = "./videos/";
+    var thumbdir = "./thumbnails/"
+
+    const btn = document.getElementById("btn");
+    const select = document.getElementById("selection");
+    const rewind = document.getElementById("rewind");
+    const backbtn = document.getElementById("back");
+    const playbtn = document.getElementById("play");
+    const forwardbtn = document.getElementById("forward");
+    const fastforward = document.getElementById("fastforward");
+
+    var filename;
+    var vidstream;
+    var canvas, context, detector;
+    var looprecording = false;
+    var recordingtime = 10000;
+    var recorder;
+    var camera;
+    var blobs = [];
+    var videos = {
+        files: [],
+        dates: []
+    };
+    var first = true;
+    var firstplay = false;
+    var playing = true;
+    var recording = false;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        canvas = document.getElementById("canvas");
+        context = canvas.getContext("2d");
+        let rawdata = fs.readFileSync('videos.json');
+        videos = JSON.parse(rawdata);
+        windowManager.sharedData.set("videos", videos);
+        for(let i in videos.dates){
+            createoption(videos.dates[i]);
+        }
+        // for(let i in videos.files){
+        //     thumb(videos.files[i]);
+        // }
+        // startRecording();
+    });
+
+    btn.onclick = (event) => {
+        event.preventDefault();
+        let filter = select.value;
+        let viewbox = document.getElementById("viewbox");
+        viewbox.innerHTML = "";
+        for(let i in videos.files){
+            if(videos.files[i].date === filter){
+                thumb(videos.files[i]);
+            }
+
+        }
     }
 
-    vid.addEventListener("timeupdate", (e) => {
-        handtime(vid.currentTime*1000);
+    playbtn.onclick = (e) =>{
+        if(playing){
+            playbtn.innerText = "Play";
+        }
+        else{
+            playbtn.innerText = "Pause";
+        }
+        windowManager.sharedData.set("playbtn", true);
+        playing = !playing;
+    }
+
+    fastforward.onclick = (e) => {
+        windowManager.sharedData.set("fastforward", true);
+    }
+
+    rewind.onclick = (e) => {
+        windowManager.sharedData.set("rewind", true);
+    }
+
+    forwardbtn.onclick = (e) => {
+        windowManager.sharedData.set("forward", true);
+    }
+
+    backbtn.onclick = (e) => {
+        windowManager.sharedData.set("back", true);
+    }
+
+
+
+
+    function createoption(date){
+        let select = document.getElementById("selection")
+        let option = document.createElement("option");
+        option.value = date;
+        option.innerText = date;
+        select.appendChild(option);
+    }
+
+    function playfile(file){
+        if(!firstplay){
+            let all = document.getElementsByClassName('button');
+            for(let i in all){
+               all[i].disabled = false;
+            }
+            firstplay = true;
+        }
+        playing = true;
+        playbtn.innerText = "Pause";
+
+        windowManager.sharedData.set("play", file.file);
+    }
+
+    function thumb(file){
+        let viewbox = document.getElementById("viewbox");
+        let thumb = document.createElement("div");
+        thumb.className = "thumb";
+        let thumbimg = document.createElement("img");
+        thumbimg.src = thumbdir + file.file + ".jpg"
+        thumbimg.alt = file.ISO;
+        thumbimg.className = "thumbimg";
+        let label = document.createElement("div");
+        let date = new Date(file.ISO)
+        label.innerText = date.toString();
+        thumb.appendChild(thumbimg);
+        thumb.appendChild(label);
+        thumb.onclick = (event) => {
+            event.preventDefault();
+            playfile(file)
+            console.log(file.file);
+        }
+        viewbox.appendChild(thumb);
+    }
+
+
+
+
+    function startRecording() {
+        vidstream = document.getElementById("video");
+
+        canvas.width = parseInt(canvas.style.width);
+        canvas.height = parseInt(canvas.style.height);
+        console.log("recording started!");
+
+        function errorCallback(e) {
+            console.log('Error', e)
+        }
+
+
+        window.navigator.getUserMedia( {
+                audio: false,
+                video: {
+                    mandatory: {
+                        // width: { min: 1024, ideal: 1280, max: 1920 },
+                        // height: { min: 576, ideal: 720, max: 1080 },
+                        // chromeMediaSourceId: 'e0dba54a7062f30afbe7a3f906e2a69b4eff636357031793248e1547197dd3b7',
+                        // chromeMediaSourceId: 'a9a5941dca194c65010c55af6890de13d367371d675be7d62a6a03af7f555e42',
+                        // chromeMediaSourceId: '69a54c6d837ebced4288488713136ac5db3badbde5d838ff51779f5ec47cd2c1',
+                        chromeMediaSourceId: 'f2d6de4fbc5cfababd8a286e8db71e6cddacce9dcc654ab890236e6a579cc88e',
+                    },
+                    // width: { ideal: 4096 },
+                    // height: { ideal: 2160 }
+                }},
+            (localMediaStream) => {
+                filename = Date.now();
+                handleStream(localMediaStream);
+
+            }, errorCallback)
+
+        // setTimeout(function() {
+        //     stopRecording();
+        //     if(looprecording){
+        //         startRecording();
+        //     }
+        // }, recordingtime);
+    }
+
+    function handleStream(stream) {
+        const track = stream.getVideoTracks()[0];
+        camera = new ImageCapture(track);
+        recorder = new MediaRecorder(stream);
+        blobs = [];
+        recorder.ondataavailable = function(event) {
+            blobs.push(event.data);
+        };
+        recorder.start();
+        if ("srcObject" in vidstream) {
+            vidstream.srcObject = stream;
+        } else {
+            vidstream.src = window.URL.createObjectURL(stream);
+        }
+        if(first){
+            requestAnimationFrame(tick);
+            first = false;
+        }
+
+
+    }
+
+    function handleUserMediaError(e) {
+        console.error('handleUserMediaError', e);
+    }
+
+    function toArrayBuffer(blob, cb) {
+        let fileReader = new FileReader();
+        fileReader.onload = function() {
+            let arrayBuffer = this.result;
+            cb(arrayBuffer);
+        };
+        fileReader.readAsArrayBuffer(blob);
+    }
+
+    function toBuffer(ab) {
+        return Buffer.from(ab);
+    }
+
+    function stopRecording() {
+        var filename = uuidv4();
+
+        if(camera !== null){
+            // console.log(camera);
+            camera.takePhoto().then((blob) => {
+                // FileSaver.saveAs(blob, "./image.jpg");
+                toArrayBuffer(blob, function (ab){
+                    console.log(ab);
+                    var buffer = toBuffer(ab);
+
+                    var file = thumbdir + filename + ".jpg"
+                    fs.writeFile(file, buffer, function(err) {
+                        if (err) {
+                            console.error('Failed to save video ' + err);
+                        }
+                    });
+                })
+                // var src = URL.createObjectURL(blob)
+                // var x = document.createElement("a")
+                // x.href = src
+                // x.download = 'screenshot.jpg';
+                // document.body.appendChild(x);
+                // x.click();
+            })
+        }
+        var save = function() {
+            console.log(blobs);
+            var data = new Blob(blobs, {type: 'video/webm'});
+            var stream = data.stream();
+            var file = videodir + filename + ".webm";
+
+            toArrayBuffer(new Blob(blobs, {type: 'video/webm'}), function(ab) {
+                console.log(ab);
+                var buffer = toBuffer(ab);
+
+                fs.writeFile(file, buffer, function(err) {
+                    if (err) {
+                        console.error('Failed to save video ' + err);
+                    } else {
+                        console.log('Saved video: ' + file);
+                        ffmpeg(file)
+                            .videoCodec('libx264')
+                            .audioCodec('libmp3lame')
+                            .on('error', function(err) {
+                                console.log('An error occurred: ' + err.message);
+                            })
+                            .on('end', function() {
+                                fs.unlink(file, (err) => {
+                                    if (err) {
+                                        console.error(err)
+                                    }
+                                })
+                                let today = new Date();
+                                let date = today.getDate() + ""
+                                let month = today.getMonth() + "";
+                                let datestring = date + "/" + month;
+                                let f = {
+                                    file: filename,
+                                    ISO: today.toISOString(),
+                                    date: datestring
+                                }
+                                videos.files.push(f);
+                                if(!(videos.dates.includes(datestring))){
+                                    videos.dates.push(datestring);
+                                    createoption(datestring);
+                                }
+                                if(datestring === select.value){
+                                    thumb(f)
+                                }
+                                windowManager.sharedData.set("videos", videos);
+                                console.log('Processing finished !');
+                                playfile(f);
+                            })
+                            .save(videodir + filename +'.mp4');
+                    }
+                });
+            });
+
+
+
+
+
+
+        };
+        recorder.onstop = save;
+        recorder.stop();
+    }
+
+    function snapshot (context){
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        // imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    }
+
+    function tick(){
+        requestAnimationFrame(tick);
+        if (video.readyState === video.HAVE_ENOUGH_DATA){
+            snapshot(context);
+        }
+
+    }
+
+    document.addEventListener('keypress', (event) => {
+        var name = event.key;
+        var code = event.code;
+        event.preventDefault()
+        // Alert the key name and key code on keydown
+        if(code === "Space"){
+            if(!recording){
+                recording = !recording;
+                startRecording();
+            }
+            else{
+                recording = !recording;
+                stopRecording();
+            }
+
+            // document.getElementById("marked").style.opacity = "0.5";
+            // window.setTimeout(function(){
+            //     document.getElementById("marked").style.opacity = "0";
+            // }, 500)
+        }
     });
-    window.addEventListener('DOMContentLoaded', () => {
-        vid.play();
-    });
+
+
+
+
+
+    // var vid = document.getElementById("vid");
+    //
+    // function handtime(time){
+    //     console.log(time);
+    // }
+    //
+    // vid.addEventListener("timeupdate", (e) => {
+    //     handtime(vid.currentTime*1000);
+    // });
+    // window.addEventListener('DOMContentLoaded', () => {
+    //     vid.play();
+    // });
+
+
+
     // const electron = require('electron');
     // // var remote = require('remote');
     // const remote = require('electron').remote;

@@ -4,6 +4,7 @@
 const { app, BrowserWindow, ipcMain, desktopCapturer } = require('electron');
 const windowManager = require('electron-window-manager');
 const path = require('path');
+const fs = require('fs');
 
 
 function createWindow () {
@@ -34,10 +35,23 @@ app.whenReady().then(() => {
         }
     });
     windowManager.sharedData.set("Test", 4);
+    windowManager.sharedData.set("play", "");
+    windowManager.sharedData.set("playbtn", false);
+    windowManager.sharedData.set("fastforward", false);
+    windowManager.sharedData.set("rewind", false);
+    windowManager.sharedData.set("forward", false);
+    windowManager.sharedData.set("back", false);
+
+
+    let videos = {
+        files: [],
+        dates: []
+    };
+    windowManager.sharedData.set("videos", videos);
      var win = windowManager.createNew("home", "Welcome", 'file://' + __dirname + '/index.html', false, {
          'width': 1400,
          'height': 800,
-         'backgroundColor': "#66CD00",
+         resizable: true,
          'webPreferences': {
              nodeIntegration: true,
              contextIsolation: false,
@@ -49,6 +63,7 @@ app.whenReady().then(() => {
     var win2 = windowManager.createNew("home2", "Welcome", 'file://' + __dirname + '/index2.html', false, {
         'width': 1400,
         'height': 800,
+        resizable: true,
         'webPreferences': {
             nodeIntegration: true,
             contextIsolation: false,
@@ -70,6 +85,9 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', function () {
+    let arr = windowManager.sharedData.fetch("videos");
+    let data = JSON.stringify(arr);
+    fs.writeFileSync("videos.json", data);
     if (process.platform !== 'darwin') app.quit()
 })
 
