@@ -62,34 +62,41 @@
         box.innerHTML = "";
         box.appendChild(vid);
         box.appendChild(mess);
-
-
         video = vid;
     })
 
     windowManager.sharedData.watch("playbtn", function(prop, action, newValue, oldValue){
         if(video !== null){
+            let mess = document.getElementById("mess");
             if(newValue === true){
                 if(video.paused){
+                    mess.innerText = "Playing";
                     video.play();
                 }
                 else{
+                    mess.innerText = "Paused";
                     video.pause();
                 }
                 windowManager.sharedData.set("playbtn", false);
+                mess.style.opacity = "0.5";
+                window.setTimeout(function(){
+                    document.getElementById("mess").style.opacity = "0";
+                }, 500)
             }
         }
 
-    })
+    });
 
     windowManager.sharedData.watch("fastforward", function(prop, action, newValue, oldValue){
         if(video !== null){
             if(newValue === true){
+                let mess = document.getElementById("mess");
                 let speed = video.playbackRate;
                 speed = speed + 0.5;
                 if(speed > 3){
                     speed = 3;
                 }
+                mess.innerText = speed + "x";
                 if(video.paused){
                     video.playbackRate = speed;
                 }
@@ -98,6 +105,10 @@
                     video.playbackRate = speed;
                     video.play();
                 }
+                mess.style.opacity = "0.5";
+                window.setTimeout(function(){
+                    document.getElementById("mess").style.opacity = "0";
+                }, 500)
                 windowManager.sharedData.set("fastforward", false);
             }
         }
@@ -106,6 +117,7 @@
     windowManager.sharedData.watch("rewind", function(prop, action, newValue, oldValue){
         if(video !== null){
             if(newValue === true){
+                let mess = document.getElementById("mess");
                 let speed = video.playbackRate;
                 if(speed > 1){
                     speed = speed - 0.5;
@@ -116,6 +128,7 @@
                 if(speed < 0.125){
                     speed = 0.125
                 }
+                mess.innerText = speed + "x";
                 if(video.paused){
                     video.playbackRate = speed;
                 }
@@ -124,6 +137,10 @@
                     video.playbackRate = speed;
                     video.play();
                 }
+                mess.style.opacity = "0.5";
+                window.setTimeout(function(){
+                    document.getElementById("mess").style.opacity = "0";
+                }, 500)
                 windowManager.sharedData.set("rewind", false);
             }
         }
@@ -132,12 +149,14 @@
     windowManager.sharedData.watch("forward", function(prop, action, newValue, oldValue){
         if(video !== null){
             if(newValue === true){
+                let mess = document.getElementById("mess");
                 let time = video.currentTime;
                 let dur = video.duration;
                 time = time + 5;
                 if(time > dur){
                     time = dur;
                 }
+                mess.innerText = ">5s";
                 if(video.paused){
                     video.currentTime = time;
                 }
@@ -146,6 +165,10 @@
                     video.currentTime = time;
                     video.play();
                 }
+                mess.style.opacity = "0.5";
+                window.setTimeout(function(){
+                    document.getElementById("mess").style.opacity = "0";
+                }, 500);
                 windowManager.sharedData.set("forward", false);
             }
         }
@@ -155,11 +178,13 @@
         if(video !== null){
             console.log("back");
             if(newValue === true){
+                let mess = document.getElementById("mess");
                 let time = video.currentTime;
                 time = time -5;
                 if(time < 0){
                     time = 0;
                 }
+                mess.innerText = "5s<";
                 if(video.paused){
                     video.currentTime = time;
                 }
@@ -168,6 +193,10 @@
                     video.currentTime = time;
                     video.play();
                 }
+                mess.style.opacity = "0.5";
+                window.setTimeout(function(){
+                    document.getElementById("mess").style.opacity = "0";
+                }, 500);
                 windowManager.sharedData.set("back", false);
             }
         }
