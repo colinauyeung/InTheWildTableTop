@@ -240,6 +240,7 @@
 
 
     function startRecording() {
+        windowManager.sharedData.set("record", true);
         vidstream = document.getElementById("video");
 
         canvas.width = parseInt(canvas.style.width);
@@ -360,6 +361,7 @@
                         console.error('Failed to save video ' + err);
                     } else {
                         console.log('Saved video: ' + file);
+                        windowManager.sharedData.set("process", true);
                         ffmpeg(file)
                             .videoCodec('libx264')
                             .audioCodec('libmp3lame')

@@ -41,7 +41,8 @@ app.whenReady().then(() => {
     windowManager.sharedData.set("rewind", false);
     windowManager.sharedData.set("forward", false);
     windowManager.sharedData.set("back", false);
-
+    windowManager.sharedData.set("record", false);
+    windowManager.sharedData.set("process", false);
 
     let videos = {
         files: [],

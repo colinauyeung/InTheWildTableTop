@@ -28,6 +28,7 @@
             width: 100%;
             text-align: center;
             font-size: 100px;
+            opacity: 0;
         }
     </style>
 </head>
@@ -92,7 +93,12 @@
             if(newValue === true){
                 let mess = document.getElementById("mess");
                 let speed = video.playbackRate;
-                speed = speed + 0.5;
+                if(speed < 1){
+                    speed = speed *2;
+                }
+                else{
+                    speed = speed + 0.5;
+                }
                 if(speed > 3){
                     speed = 3;
                 }
@@ -202,6 +208,30 @@
         }
 
     });
+
+    windowManager.sharedData.watch("record", function(prop, action, newValue, oldValue){
+        if(newValue === true){
+            let mess = document.getElementById("mess");
+            mess.innerText = "Recording";
+            mess.style.opacity = "0.5";
+            window.setTimeout(function(){
+                document.getElementById("mess").style.opacity = "0";
+            }, 500);
+            windowManager.sharedData.set("record", false);
+        }
+    })
+
+    windowManager.sharedData.watch("process", function(prop, action, newValue, oldValue){
+        if(newValue === true){
+            let mess = document.getElementById("mess");
+            mess.innerText = "Processing";
+            mess.style.opacity = "0.5";
+            window.setTimeout(function(){
+                document.getElementById("mess").style.opacity = "0";
+            }, 500);
+            windowManager.sharedData.set("process", false);
+        }
+    })
 
 
 
