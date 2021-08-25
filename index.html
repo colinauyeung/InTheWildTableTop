@@ -300,6 +300,7 @@
     }
 
     function takephoto(context, filename){
+
         context.drawImage(video, 0, 0, canvash.width, canvash.height);
         var data = canvash.toBlob(function (blob) {
             toArrayBuffer(blob, function (ab){
