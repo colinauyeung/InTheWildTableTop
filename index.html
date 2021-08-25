@@ -301,7 +301,7 @@
         var mimeString = dsplit[0].split(':')[1].split(';')[0];
         var ab = new ArrayBuffer(byteString.length);
         var buffer = toBuffer(ab);
-        var file = thumbdir + filename + ".jpg"
+        var file = thumbdir + filename + ".png"
         fs.writeFile(file, buffer, function(err) {
             if (err) {
                 console.error('Failed to save video ' + err);
