@@ -42,6 +42,8 @@
 <button id="play" class="button" disabled>Pause</button>
 <button id="forward" class="button" disabled>></button>
 <button id="fastforward" class="button" disabled>>></button>
+<input type="text" id="anno" name="anno"
+       size="12">
 <div id="bounding">
 
     <div id="box2">
@@ -440,9 +442,10 @@
     document.addEventListener('keypress', (event) => {
         var name = event.key;
         var code = event.code;
-        event.preventDefault()
+
         // Alert the key name and key code on keydown
-        if(code === "Space"){
+        if(code === "Enter"){
+            event.preventDefault();
             if(!recording){
                 recording = !recording;
                 startRecording();
