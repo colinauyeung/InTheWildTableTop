@@ -295,18 +295,31 @@
 
     function takephoto(context, filename){
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        var data = canvas.toDataURL('image/png');
-        var dsplit = data.split(',')
-        var byteString = atob(dsplit[1]);
-        var mimeString = dsplit[0].split(':')[1].split(';')[0];
-        var ab = new ArrayBuffer(byteString.length);
-        var buffer = toBuffer(ab);
-        var file = thumbdir + filename + ".png"
-        fs.writeFile(file, buffer, function(err) {
-            if (err) {
-                console.error('Failed to save video ' + err);
-            }
+        var data = canvas.toBlob(function (blob) {
+            toArrayBuffer(blob, function (ab){
+                console.log(ab);
+                var buffer = toBuffer(ab);
+
+                var file = thumbdir + filename + ".png";
+                fs.writeFile(file, buffer, function(err) {
+                    if (err) {
+                        console.error('Failed to save video ' + err);
+                    }
+                });
+            })
         });
+    //     ('image/jpg');
+    //     var dsplit = data.split(',')
+    //     var byteString = atob(dsplit[1]);
+    //     var mimeString = dsplit[0].split(':')[1].split(';')[0];
+    //     var ab = new ArrayBuffer(byteString.length);
+    //     var buffer = toBuffer(ab);
+    //     var file = thumbdir + filename + ".png"
+    //     fs.writeFile(file, buffer, function(err) {
+    //         if (err) {
+    //             console.error('Failed to save video ' + err);
+    //         }
+    //     });
     }
 
     function stopRecording() {
