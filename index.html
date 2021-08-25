@@ -234,17 +234,20 @@
         window.navigator.getUserMedia( {
                 audio: false,
                 video: {
-                    // mandatory: {
-                    //     // width: { min: 1024, ideal: 1280, max: 1920 },
-                    //     // height: { min: 576, ideal: 720, max: 1080 },
-                    //     // chromeMediaSourceId: 'e0dba54a7062f30afbe7a3f906e2a69b4eff636357031793248e1547197dd3b7',
-                    //     chromeMediaSourceId: '0f8ca0c80f220df342a4246f405196dcd8a5174d4821a1b6de87b98b0eb41f43',
-                    //     // chromeMediaSourceId: 'a9a5941dca194c65010c55af6890de13d367371d675be7d62a6a03af7f555e42',
-                    //     // chromeMediaSourceId: '69a54c6d837ebced4288488713136ac5db3badbde5d838ff51779f5ec47cd2c1',
-                    //     // chromeMediaSourceId: 'f2d6de4fbc5cfababd8a286e8db71e6cddacce9dcc654ab890236e6a579cc88e',
-                    // },
-                    width: { ideal: 4096 },
-                    height: { ideal: 2160 }
+                    mandatory: {
+                        // width: { min: 1024, ideal: 1280, max: 1920 },
+                        // height: { min: 576, ideal: 720, max: 1080 },
+                        // chromeMediaSourceId: 'e0dba54a7062f30afbe7a3f906e2a69b4eff636357031793248e1547197dd3b7',
+                        //     chromeMediaSourceId: '0f8ca0c80f220df342a4246f405196dcd8a5174d4821a1b6de87b98b0eb41f43',
+                        // chromeMediaSourceId: 'a9a5941dca194c65010c55af6890de13d367371d675be7d62a6a03af7f555e42',
+                        // chromeMediaSourceId: '69a54c6d837ebced4288488713136ac5db3badbde5d838ff51779f5ec47cd2c1',
+                        // chromeMediaSourceId: 'f2d6de4fbc5cfababd8a286e8db71e6cddacce9dcc654ab890236e6a579cc88e',
+                    chromeMediaSourceId: 'c60b4a1581d1b280b4bf56d5117562c1681eb621fe5af090ee982779000cf5a0',
+
+                    
+                    },
+                    // width: { ideal: 4096 },
+                    // height: { ideal: 2160 }
                 }},
             (localMediaStream) => {
                 filename = Date.now();
