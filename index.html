@@ -6,7 +6,7 @@
     <style>
         #viewbox {
             width: 850px;
-            height: 250px;
+            height: 400px;
             background-color: orange;
             overflow: scroll;
         }
@@ -25,7 +25,7 @@
         }
 
         .button{
-            float: left;
+            /*float: left;*/
         }
 
 
@@ -38,7 +38,10 @@
 <button id="forward" class="button" disabled>></button>
 <button id="fastforward" class="button" disabled>>></button>
 <input type="text" id="anno" name="anno"
-       size="12">
+       size="12" placeholder="Name your clip!">
+<div id="mess">
+    Press ~ to Start a Recording!
+</div>
 <div id="bounding">
 
     <div id="box2">
@@ -106,6 +109,7 @@
     var firstplay = false;
     var playing = true;
     var recording = false;
+    var processing = false;
 
     window.addEventListener('DOMContentLoaded', () => {
         canvas = document.getElementById("canvas");
@@ -221,6 +225,7 @@
 
     function startRecording() {
         windowManager.sharedData.set("record", true);
+        document.getElementById("mess").innerText = "Recording... Press ~ to end recording (name your clips before ending recording!)";
         vidstream = document.getElementById("video");
 
         canvas.width = parseInt(canvas.style.width);
@@ -369,6 +374,8 @@
         // }
 
         takephoto(contexth, filename);
+        document.getElementById("mess").innerText = "Processing Recording... This could take a moment)";
+        processing = true;
         var save = function() {
             console.log(blobs);
             var data = new Blob(blobs, {type: 'video/webm'});
@@ -417,6 +424,8 @@
                                 }
                                 windowManager.sharedData.set("videos", videos);
                                 console.log('Processing finished !');
+                                document.getElementById("mess").innerText = "Processing Done! Press ~ to record again";
+                                processing = false;
                                 playfile(f);
                             })
                             .save(videodir + filename +'.mp4');
@@ -453,15 +462,19 @@
 
         // Alert the key name and key code on keydown
         if(code === "Backquote"){
+
             event.preventDefault();
-            if(!recording){
-                recording = !recording;
-                startRecording();
+            if(!processing){
+                if(!recording){
+                    recording = !recording;
+                    startRecording();
+                }
+                else{
+                    recording = !recording;
+                    stopRecording();
+                }
             }
-            else{
-                recording = !recording;
-                stopRecording();
-            }
+
 
             // document.getElementById("marked").style.opacity = "0.5";
             // window.setTimeout(function(){
