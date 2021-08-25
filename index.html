@@ -25,13 +25,21 @@
         }
 
         .button{
+
             /*float: left;*/
+        }
+
+        #mess{
+            font-size: 24px;
         }
 
 
     </style>
 </head>
 <body>
+<div id="mess">
+    Press ~ to Start a Recording!
+</div>
 <label for="rewind">Video Playback Controls</label>
 <button id="rewind" class="button" disabled><<</button>
 <button id="back" class="button" disabled><</button>
@@ -41,9 +49,7 @@
 <label for="anno">Name your clips: </label>
 <input type="text" id="anno" name="anno"
        size="12" placeholder="Name your clip!">
-<div id="mess">
-    Press ~ to Start a Recording!
-</div>
+
 <div id="bounding">
 
     <div id="box2">
@@ -482,6 +488,12 @@
             // window.setTimeout(function(){
             //     document.getElementById("marked").style.opacity = "0";
             // }, 500)
+        }
+        if(code === "ArrowLeft"){
+            windowManager.sharedData.set("back", true);
+        }
+        if(code === "ArrowRight"){
+            windowManager.sharedData.set("forward", true);
         }
     });
 
