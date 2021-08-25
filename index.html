@@ -29,15 +29,16 @@
             /*float: left;*/
         }
 
-        #mess{
+        .title{
             font-size: 24px;
+            padding: 5px;
         }
 
 
     </style>
 </head>
 <body>
-<div id="mess">
+<div id="mess" class="title">
     Press ~ to Start a Recording!
 </div>
 <label for="rewind">Video Playback Controls</label>
@@ -62,7 +63,10 @@
 
 
 </div>
-<label for="selection">Choose a date to view:</label>
+<div class="title">
+    View Past Recordings
+</div>
+<label for="selection">Choose a date (day/month) to view:</label>
 
 <select name="cars" id="selection">
 <!--    <option value="volvo">Volvo</option>-->
@@ -490,9 +494,11 @@
             // }, 500)
         }
         if(code === "ArrowLeft"){
+            event.preventDefault();
             windowManager.sharedData.set("back", true);
         }
         if(code === "ArrowRight"){
+            event.preventDefault();
             windowManager.sharedData.set("forward", true);
         }
     });
