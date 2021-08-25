@@ -198,8 +198,14 @@
         thumbimg.alt = file.ISO;
         thumbimg.className = "thumbimg";
         let label = document.createElement("div");
-        let date = new Date(file.ISO)
-        label.innerText = date.toString();
+        let date = new Date(file.ISO);
+        if(file.mess === ""){
+            label.innerText = date.toString();
+        }
+        else{
+            label.innerText = file.mess;
+        }
+
         thumb.appendChild(thumbimg);
         thumb.appendChild(label);
         thumb.onclick = (event) => {
@@ -331,6 +337,9 @@
 
     function stopRecording() {
         var filename = uuidv4();
+        let anno = document.getElementById("anno");
+        let annomess = anno.value;
+        anno.value = "";
 
         // if(camera !== null){
         //     // console.log(camera);
@@ -395,7 +404,8 @@
                                 let f = {
                                     file: filename,
                                     ISO: today.toISOString(),
-                                    date: datestring
+                                    date: datestring,
+                                    mess: annomess
                                 }
                                 videos.files.push(f);
                                 if(!(videos.dates.includes(datestring))){
@@ -442,7 +452,7 @@
         var code = event.code;
 
         // Alert the key name and key code on keydown
-        if(code === "Enter"){
+        if(code === "Tab"){
             event.preventDefault();
             if(!recording){
                 recording = !recording;
