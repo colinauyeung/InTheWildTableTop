@@ -46,7 +46,7 @@
 
     <div id="box2">
         <video id="video" autoplay style="display:none;"></video>
-        <canvas id="canvas" style="width:1920px; height:1080px;"></canvas>
+        <canvas id="canvas" style="width:640px; height:480px;"></canvas>
     </div>
 
 
@@ -67,6 +67,7 @@
 
 <div id="viewbox">
 </div>
+<canvas id="canvashidden" style="width:1920px; height:1080px; opacity: 0"></canvas>
 
 
 <script>
@@ -93,7 +94,8 @@
 
     var filename;
     var vidstream;
-    var canvas, context, detector;
+    var canvas, context;
+    var canvash, contexth;
     var looprecording = false;
     var recordingtime = 10000;
     var recorder;
@@ -111,6 +113,8 @@
     window.addEventListener('DOMContentLoaded', () => {
         canvas = document.getElementById("canvas");
         context = canvas.getContext("2d");
+        canvash = document.getElementById("canvashidden");
+        contexth = canvash.getContext("2d");
         let rawdata = fs.readFileSync('videos.json');
         videos = JSON.parse(rawdata);
         windowManager.sharedData.set("videos", videos);
@@ -218,6 +222,8 @@
 
         canvas.width = parseInt(canvas.style.width);
         canvas.height = parseInt(canvas.style.height);
+        canvash.width = parseInt(canvash.style.width);
+        canvash.height = parseInt(canvash.style.height);
         console.log("recording started!");
 
         function errorCallback(e) {
@@ -294,8 +300,8 @@
     }
 
     function takephoto(context, filename){
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        var data = canvas.toBlob(function (blob) {
+        context.drawImage(video, 0, 0, canvash.width, canvash.height);
+        var data = canvash.toBlob(function (blob) {
             toArrayBuffer(blob, function (ab){
                 console.log(ab);
                 var buffer = toBuffer(ab);
@@ -352,7 +358,7 @@
         //
         // }
 
-        takephoto(context, filename);
+        takephoto(contexth, filename);
         var save = function() {
             console.log(blobs);
             var data = new Blob(blobs, {type: 'video/webm'});
