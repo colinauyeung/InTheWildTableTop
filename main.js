@@ -1,5 +1,4 @@
-// main.js
-
+//Most of this is default stuff from the electron example, although modifed to use electron-window-manager
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, ipcMain, desktopCapturer } = require('electron');
 const windowManager = require('electron-window-manager');
@@ -34,6 +33,8 @@ app.whenReady().then(() => {
             console.log('Cannot load the requested page!');
         }
     });
+
+    //Preset all the shareddata that we need for the two windows
     windowManager.sharedData.set("Test", 4);
     windowManager.sharedData.set("play", "");
     windowManager.sharedData.set("playbtn", false);
@@ -53,6 +54,7 @@ app.whenReady().then(() => {
          'width': 1400,
          'height': 800,
          resizable: true,
+         //These webpreferences are needed to allow the windows to use node js modules
          'webPreferences': {
              nodeIntegration: true,
              contextIsolation: false,
@@ -65,6 +67,8 @@ app.whenReady().then(() => {
         'width': 1400,
         'height': 800,
         resizable: true,
+
+        //These webpreferences are needed to allow the windows to use node js modules
         'webPreferences': {
             nodeIntegration: true,
             contextIsolation: false,
@@ -72,7 +76,6 @@ app.whenReady().then(() => {
         }
     });
     win2.open();
-    // createWindow()
 
 
     app.on('activate', function () {

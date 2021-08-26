@@ -37,46 +37,64 @@
     </div>
 </div>
 <script>
+
+    //node js imports
     const electron = require('electron');
-    // var remote = require('remote');
     const remote = require('electron').remote;
     const windowManager = remote.require('electron-window-manager');
 
+    //variable to store the video elment
     var video;
-    // // var windowManager = require("electron-window-manager");
-    // const { v4: uuidv4 } = require('uuid');
-    // // const remote = require('remote');
 
+    //Watch for a play command
     windowManager.sharedData.watch("play",  function(prop, action, newValue, oldValue){
+
+        //Set up video element
         let vid = document.createElement("video");
         vid.src = "./videos/" + newValue + ".mp4";
         vid.autoplay = true;
         vid.loop = true;
-        vid.controls = true;
-        vid.className = "videof"
+        vid.controls = false;
+        vid.className = "videof";
+
+        //Set up container for video element
         let box = document.getElementById("videobox");
+
+        //Setup the popup text element
         let mess = document.createElement("div");
         mess.id = "mess";
         mess.innerText = "Hello World";
         box.innerHTML = "";
+
+        //Append everything and pass it to the video variable
         box.appendChild(vid);
         box.appendChild(mess);
         video = vid;
     })
 
+    //Watch for the play button
     windowManager.sharedData.watch("playbtn", function(prop, action, newValue, oldValue){
+        //check if the video has been set up
         if(video !== null){
             let mess = document.getElementById("mess");
+            //Check if it was something else that sent te signal
             if(newValue === true){
+                //If the video is paused, play
                 if(video.paused){
                     mess.innerText = "Playing";
                     video.play();
                 }
+
+                //If it's playing, pause
                 else{
                     mess.innerText = "Paused";
                     video.pause();
                 }
+
+                //Say that we saw the button press
                 windowManager.sharedData.set("playbtn", false);
+
+                //Have text pop up
                 mess.style.opacity = "0.8";
                 window.setTimeout(function(){
                     document.getElementById("mess").style.opacity = "0";
@@ -86,11 +104,16 @@
 
     });
 
+    //Watch for the fastforward button
     windowManager.sharedData.watch("fastforward", function(prop, action, newValue, oldValue){
         if(video !== null){
             if(newValue === true){
                 let mess = document.getElementById("mess");
+
+                //Get the current playback speed
                 let speed = video.playbackRate;
+
+                //This math will step playback speed at: 0.125, 0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0
                 if(speed < 1){
                     speed = speed *2;
                 }
@@ -101,6 +124,8 @@
                     speed = 3;
                 }
                 mess.innerText = speed + "x";
+
+                //Probably could be simplfied, but I like pausing the video before adjusting things
                 if(video.paused){
                     video.playbackRate = speed;
                 }
@@ -109,20 +134,29 @@
                     video.playbackRate = speed;
                     video.play();
                 }
+
+                //Pop up message
                 mess.style.opacity = "0.8";
                 window.setTimeout(function(){
                     document.getElementById("mess").style.opacity = "0";
                 }, 500)
+                //Say that we saw the button press
                 windowManager.sharedData.set("fastforward", false);
             }
         }
 
     });
+
+    //Mostly the same as the watcher for "fastforward" check there for comments
     windowManager.sharedData.watch("rewind", function(prop, action, newValue, oldValue){
         if(video !== null){
             if(newValue === true){
                 let mess = document.getElementById("mess");
+
+                //Get the current playback speed
                 let speed = video.playbackRate;
+
+                //This math will step playback speed at: 0.125, 0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0
                 if(speed > 1){
                     speed = speed - 0.5;
                 }
@@ -133,6 +167,8 @@
                     speed = 0.125
                 }
                 mess.innerText = speed + "x";
+
+                //Probably could be simplfied, but I like pausing the video before adjusting things
                 if(video.paused){
                     video.playbackRate = speed;
                 }
@@ -141,26 +177,39 @@
                     video.playbackRate = speed;
                     video.play();
                 }
+
+                //Pop up message
                 mess.style.opacity = "0.8";
                 window.setTimeout(function(){
                     document.getElementById("mess").style.opacity = "0";
-                }, 500)
+                }, 500);
+
+                //Say that we saw the button press
                 windowManager.sharedData.set("rewind", false);
             }
         }
 
     });
+
+
+    //watch for forward button
     windowManager.sharedData.watch("forward", function(prop, action, newValue, oldValue){
         if(video !== null){
             if(newValue === true){
                 let mess = document.getElementById("mess");
+
+                //Get the video's currenttime and duration
                 let time = video.currentTime;
                 let dur = video.duration;
+
+                //Adjust the current time, so that we don't go over the duration
                 time = time + 5;
                 if(time > dur){
                     time = dur;
                 }
                 mess.innerText = ">5s";
+
+                //Pause before adjusting time
                 if(video.paused){
                     video.currentTime = time;
                 }
@@ -169,26 +218,38 @@
                     video.currentTime = time;
                     video.play();
                 }
+
+                //Pop up text
                 mess.style.opacity = "0.8";
                 window.setTimeout(function(){
                     document.getElementById("mess").style.opacity = "0";
                 }, 500);
+
+                //Say that we saw the button press
                 windowManager.sharedData.set("forward", false);
             }
         }
 
     });
+
+    //watch for back button
     windowManager.sharedData.watch("back", function(prop, action, newValue, oldValue){
         if(video !== null){
             console.log("back");
             if(newValue === true){
                 let mess = document.getElementById("mess");
+
+                //Get the video's currenttime
                 let time = video.currentTime;
+
+                //Adjust the current time, so that we don't go under 0
                 time = time -5;
                 if(time < 0){
                     time = 0;
                 }
                 mess.innerText = "5s<";
+
+                //Pause before adjusting time
                 if(video.paused){
                     video.currentTime = time;
                 }
@@ -197,18 +258,24 @@
                     video.currentTime = time;
                     video.play();
                 }
+
+                //Pop up text
                 mess.style.opacity = "0.8";
                 window.setTimeout(function(){
                     document.getElementById("mess").style.opacity = "0";
                 }, 500);
+
+                //Say that we saw the button press
                 windowManager.sharedData.set("back", false);
             }
         }
 
     });
 
+    //Look for the record signal
     windowManager.sharedData.watch("record", function(prop, action, newValue, oldValue){
         if(newValue === true){
+            //Pop up text
             let mess = document.getElementById("mess");
             mess.innerText = "Recording";
             mess.style.opacity = "0.8";
@@ -219,8 +286,11 @@
         }
     })
 
+    //Look for the Processing signal
     windowManager.sharedData.watch("process", function(prop, action, newValue, oldValue){
         if(newValue === true){
+
+            //Pop up text
             let mess = document.getElementById("mess");
             mess.innerText = "Processing";
             mess.style.opacity = "0.8";
